@@ -5,8 +5,8 @@
 "use client";
 
 import type { FC } from 'react';
-import React, { useEffect, useRef } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import React, { useEffect, useRef, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,7 +43,7 @@ function SubmitButton() {
 }
 
 export const URLResolverForm: FC<URLResolverFormProps> = ({ onNewUrlResolved }) => {
-  const [state, formAction] = useFormState(resolveUrlAction, initialState);
+  const [state, formAction] = useActionState(resolveUrlAction, initialState);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
