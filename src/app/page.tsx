@@ -8,15 +8,13 @@ import React, { useState, useCallback } from 'react';
 import { URLResolverForm } from '@/components/url-resolver-form';
 import { URLHistoryDisplay } from '@/components/url-history-display';
 import type { ResolveState } from '@/app/actions';
-import { Zap } from 'lucide-react'; // Using Zap for Sleuth/Detective theme
+import { Zap } from 'lucide-react'; 
 
 export default function URLSleuthPage() {
   const [history, setHistory] = useState<ResolveState[]>([]);
 
   const handleNewUrlResolved = useCallback((entry: ResolveState) => {
-    // Add to history, ensuring not to add duplicates if the exact same resolution (e.g. from form resubmit)
-    // For simplicity, we'll add it. A more robust check might involve entry.id or content hash.
-    setHistory(prev => [entry, ...prev].slice(0, 20)); // Keep last 20 entries
+    setHistory(prev => [entry, ...prev].slice(0, 20)); 
   }, []);
 
   return (
@@ -27,10 +25,10 @@ export default function URLSleuthPage() {
             <Zap size={48} className="text-primary" />
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-primary">
-            URL Sleuth
+            Detetive de URL
           </h1>
           <p className="mt-3 text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto">
-            Unravel the mysteries of web links. Enter any URL to discover its true final destination and trace its path.
+            Desvende os mistérios dos links da web. Insira qualquer URL para descobrir seu verdadeiro destino final e rastrear seu caminho.
           </p>
         </header>
 
@@ -40,8 +38,8 @@ export default function URLSleuthPage() {
         </div>
 
         <footer className="mt-16 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} URL Sleuth. Powered by Next.js & Vercel.</p>
-          <p className="mt-1">Designed for clarity and insight.</p>
+          <p>&copy; {new Date().getFullYear()} Detetive de URL. Desenvolvido com Next.js.</p>
+          <p className="mt-1">Projetado para clareza e discernimento.</p>
         </footer>
       </main>
     </div>

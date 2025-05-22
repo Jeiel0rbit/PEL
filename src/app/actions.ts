@@ -5,13 +5,13 @@
 'use server';
 
 export type ResolveState = {
-  id?: string; // To help with keying in lists if needed immediately
+  id?: string; 
   originalUrl?: string;
   finalUrl?: string;
   error?: string;
-  timestamp?: string; // ISO string
-  message?: string; // For general feedback to the user
-  status?: number; // HTTP status of the final URL
+  timestamp?: string; 
+  message?: string; 
+  status?: number; 
 };
 
 export async function resolveUrlAction(
@@ -21,15 +21,15 @@ export async function resolveUrlAction(
   const rawUrl = formData.get('url');
 
   if (typeof rawUrl !== 'string' || rawUrl.trim() === '') {
-    return { error: 'URL cannot be empty.', message: 'Please enter a URL.' };
+    return { error: 'A URL não pode estar vazia.', message: 'Por favor, insira uma URL.' };
   }
 
   let urlInstance;
   try {
-    // Ensure URL has a scheme for the URL constructor and fetch
     urlInstance = new URL(rawUrl.startsWith('http://') || rawUrl.startsWith('https://') ? rawUrl : `http://${rawUrl}`);
   } catch (e) {
-    return { originalUrl: rawUrl, error: 'Invalid URL format.', message: 'The URL provided is not valid.' };
+    console.error('Erro de parsing da URL:', e);
+    return { originalUrl: rawUrl, error: 'Formato de URL inválido.', message: 'A URL fornecida não parece ser válida. Verifique se ela começa com http:// ou https:// e tente novamente.' };
   }
 
   const validatedUrl = urlInstance.toString();
@@ -39,30 +39,30 @@ export async function resolveUrlAction(
       method: 'GET',
       redirect: 'follow',
       headers: {
-        'User-Agent': 'URLSleuth/1.0 (URL Resolver)', // A descriptive user agent
+        'User-Agent': 'DetetiveURL/1.0 (Resolvedor de URL)', 
       },
-      // Add a timeout to prevent hanging indefinitely
-      signal: AbortSignal.timeout(10000), // 10 seconds timeout
+      signal: AbortSignal.timeout(10000), 
     });
 
     const finalUrl = response.url;
     const status = response.status;
     const timestamp = new Date().toISOString();
 
-    let message = `URL resolved. Final destination status: ${status}.`;
+    let message = `A URL original parece válida. Status do destino final: ${status}.`;
     let error;
 
     if (status >= 400) {
-      error = `HTTP Error: ${status} ${response.statusText || 'Error'}`;
-      message = `The URL resolved to an error page (Status: ${status}).`;
+      error = `Erro HTTP: ${status} ${response.statusText || 'Erro'}`;
+      message = `A URL original levou a uma página de erro (Status: ${status}). Isso pode significar que a página não existe ou há um problema no servidor de destino.`;
+      console.error(`Erro ao resolver ${validatedUrl}: Destino final ${finalUrl} retornou status ${status}`);
     } else if (finalUrl !== validatedUrl) {
-      message = 'URL resolved successfully after one or more redirects.';
+      message = 'A URL original é válida e foi redirecionada para um novo endereço.';
     } else {
-      message = 'URL resolved successfully. No redirects detected.';
+      message = 'A URL original é válida e não houve redirecionamentos.';
     }
     
     return {
-      id: Math.random().toString(36).substring(7), // simple unique id for potential immediate use
+      id: Math.random().toString(36).substring(7), 
       originalUrl: validatedUrl,
       finalUrl: finalUrl,
       error: error,
@@ -72,26 +72,26 @@ export async function resolveUrlAction(
     };
 
   } catch (e: any) {
-    console.error('Error resolving URL:', e);
-    let errorMessage = 'Failed to resolve URL.';
+    console.error(`Falha técnica ao tentar resolver a URL ${validatedUrl}:`, e);
+    let errorMessage = 'Não foi possível verificar a URL original.';
     if (e.name === 'AbortError') {
-        errorMessage = 'Request timed out after 10 seconds.';
+        errorMessage = 'A tentativa de verificar a URL demorou demais (mais de 10 segundos) e foi interrompida.';
     } else if (e.cause && typeof e.cause === 'object') {
         // @ts-ignore
         const causeCode = e.cause.code;
-        if (causeCode === 'ENOTFOUND') errorMessage = 'Domain not found. Check the URL and try again.';
-        else if (causeCode === 'ECONNREFUSED') errorMessage = 'Connection refused by the server.';
-        else if (causeCode === 'EAI_AGAIN') errorMessage = 'Temporary failure in name resolution. Please try again later.';
-        else errorMessage = `Network error: ${causeCode || 'Unknown'}.`;
+        if (causeCode === 'ENOTFOUND') errorMessage = 'O endereço (domínio) da URL original não foi encontrado. Verifique se digitou corretamente.';
+        else if (causeCode === 'ECONNREFUSED') errorMessage = 'A conexão com o servidor da URL original foi recusada.';
+        else if (causeCode === 'EAI_AGAIN') errorMessage = 'Houve uma falha temporária ao tentar encontrar o endereço da URL original. Tente novamente mais tarde.';
+        else errorMessage = `Ocorreu um erro de rede (${causeCode || 'Desconhecido'}) ao tentar acessar a URL original.`;
     } else if (e instanceof TypeError && e.message.includes('fetch')) {
-        errorMessage = 'Invalid URL or network issue. Please check the URL.';
+        errorMessage = 'A URL original parece inválida ou houve um problema de rede. Verifique a URL.';
     }
     
     return {
-      originalUrl: validatedUrl, // Use validatedUrl as originalUrl even on error
+      originalUrl: validatedUrl, 
       error: errorMessage,
       timestamp: new Date().toISOString(),
-      message: 'Could not retrieve the final URL due to an error.'
+      message: 'Não foi possível obter informações sobre a URL original devido a um erro.'
     };
   }
 }
