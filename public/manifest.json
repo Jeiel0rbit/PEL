@@ -1,0 +1,24 @@
+{
+  "name": "Detetive de URL",
+  "short_name": "DetetiveURL",
+  "description": "Descubra o verdadeiro destino de qualquer URL.",
+  "icons": [
+    {
+      "src": "https://placehold.co/192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://placehold.co/512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#667eea",
+  "background_color": "#f7f8fc",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary"
+}

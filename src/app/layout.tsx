@@ -16,6 +16,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Detetive de URL',
   description: 'Descubra o verdadeiro destino de qualquer URL.',
+  manifest: '/manifest.json',
+  themeColor: '#667eea', // Cor primária do tema
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'DetetiveURL', // Nome curto para a tela inicial no iOS
+  },
 };
 
 export default function RootLayout({
